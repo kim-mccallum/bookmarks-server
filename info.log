@@ -1,0 +1,5 @@
+{"message":"Unauthorized request to path: /","level":"error"}
+{"message":"New bookmark with id de7186d1-4923-494a-913f-d4379747313d was created","level":"info"}
+{"message":"Bookmarks with id de7186d1-4923-494a-913f-d4379747313d was not found","level":"error"}
+{"message":"New bookmark with id 4ee1a90e-06a3-468a-9176-dd38c32e2ecb was created","level":"info"}
+{"message":"Bookmark with id 4ee1a90e-06a3-468a-9176-dd38c32e2ecb has been exterminated","level":"info"}

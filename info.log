@@ -3,3 +3,13 @@
 {"message":"Bookmarks with id de7186d1-4923-494a-913f-d4379747313d was not found","level":"error"}
 {"message":"New bookmark with id 4ee1a90e-06a3-468a-9176-dd38c32e2ecb was created","level":"info"}
 {"message":"Bookmark with id 4ee1a90e-06a3-468a-9176-dd38c32e2ecb has been exterminated","level":"info"}
+{"message":"Unauthorized request to path: /bookmark","level":"error"}
+{"message":"Unauthorized request to path: /bookmark","level":"error"}
+{"message":"Unauthorized request to path: /bookmark/123456","level":"error"}
+{"message":"Unauthorized request to path: /bookmark/2","level":"error"}
+{"message":"Unauthorized request to path: /bookmark","level":"error"}
+{"message":"Unauthorized request to path: /bookmark","level":"error"}
+{"message":"Unauthorized request to path: /bookmark/123456","level":"error"}
+{"message":"Unauthorized request to path: /bookmark/2","level":"error"}
+{"message":"Unauthorized request to path: /bookmark/123456","level":"error"}
+{"message":"Unauthorized request to path: /bookmark/2","level":"error"}

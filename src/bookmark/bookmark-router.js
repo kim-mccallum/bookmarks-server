@@ -63,7 +63,6 @@ bookmarkRouter.route('/bookmark/:id')
         // console log the id and chase it down
         BookmarksService.getById(knexInstance, bookmarkId)
             .then(bookmark => {
-                console.log(`here is the bm id: ${bookmark.id}`)
                 if(!bookmark){
                     return res.status(404).json({
                         error: {message: `Bookmark doesn't exist`}

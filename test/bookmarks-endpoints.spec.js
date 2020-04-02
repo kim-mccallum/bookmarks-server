@@ -38,7 +38,6 @@ describe.only(`Bookmarks endpoints`, function() {
                 .into('bookmarks')
                 .insert(testBookmarks)
             })
-            //passing
             it('responds with 200 and all of the bookmarks', () => {  
             return supertest(app)
                 .get('/bookmark')
@@ -50,7 +49,7 @@ describe.only(`Bookmarks endpoints`, function() {
     
         describe(`GET /bookmark/:bookmark_id`, () => {
             context(`Given no bookmarks`, () =>{
-                it(`responds with 404`, () => {
+                it(`responds with 404 and not found message`, () => {
                     const bookmarkId = 123456
                     return supertest(app)
                         .get(`/bookmark/${bookmarkId}`)
@@ -66,7 +65,6 @@ describe.only(`Bookmarks endpoints`, function() {
                     .into('bookmarks')
                     .insert(testBookmarks)
                 })
-                //passing
                 it('responds with 200 and the specified bookmark', () => {
                 const bookmarkId = 2
                 const expectedBookmark = testBookmarks[bookmarkId - 1]

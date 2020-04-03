@@ -1,12 +1,20 @@
 const express = require('express');
 const uuid = require('uuid/v4');
 const logger = require('../logger');
-const { bookmarks } = require('../store')
-// I think the bookmarks-service belongs here 
-const BookmarksService = require('../bookmarks-service');
+const { bookmarks } = require('../store');
+const xss = require('xss');
+const BookmarksService = require('./bookmarks-service');
 
 const bookmarkRouter = express.Router();
-const bodyParser = express.json();
+const jsonParser = express.json();
+
+const serializeBookmark = bookmark => ({
+    id: bookmark.id,
+    title: bookmark.title,
+    url: xss(bookmark.url),
+    description: xss(bookmark.description),
+    rating: bookmark.rating
+  })
 
 bookmarkRouter.route('/').get((req, res) => {
     res.send('Welcome to the bookmarks API, check out our bookmark endpoint to view booksmarks. GET and DELETE using bookmark id.')
@@ -18,42 +26,42 @@ bookmarkRouter.route('/bookmark')
         const knexInstance = req.app.get('db')
         BookmarksService.getAllBookmarks(knexInstance)
             .then(bookmarks => {
-                res.json(bookmarks)
+                res.json(bookmarks.map(serializeBookmark))
             })
             .catch(next)
     })
-    .post(bodyParser, (req, res) => {
-        // How do I insert this into the DB? Right now, it's still using STORE
-        const { title, url } = req.body;
-        console.log(title, url) 
-        if(!title){
-            logger.error(`Bookmark title is required`);
-            return res.status(400).send('Invalid data');
-        }
-        if(!url){
-            logger.error(`Bookmark URL is required`);
-            return res.status(400).send('Invalid data');
-        }
-        if(!description){
-            logger.error(`Bookmark description is required`);
-            return res.status(400).send('Invalid data');
-        }
-        if(!rating){
-            logger.error(`Bookmark rating is required`);
-            return res.status(400).send('Invalid data');
-        }
-        const id = uuid()
-        const bookmark = {
-            id, title, url, description, rating
-        }
-        // Change this to add the DB
-        //BookmarksService method to insert 
-        // BookmarksService.
-        bookmarks.push(bookmark);
+    //POST a new one to the db
+    .post(jsonParser, (req, res, next) => {
+        const { title, url, rating } = req.body;
+        const newBookmark = { title, url, rating }
+        console.log(title, url, rating) 
 
-        logger.info(`New bookmark with id ${id} was created`)
+        for (const [key, value] of Object.entries(newBookmark)){
+            if(value == null){
+                return res.status(400).json({
+                    error: { message: `Missing '${key}' in request body`}
+                })
+            }
+        }
+        if( rating < 1 || rating > 5){
+            return res.status(400).json({
+                error: { message: `Rating must be a value between 1 and 5.`}
+            })
+        }
 
-        res.status(201).location(`http://localhost/8000/bookmark/${id}`).json({id})
+        BookmarksService.insertBookmark(
+            req.app.get('db'),
+            //Do I need to sanitize the bookmark going into the db?
+            newBookmark
+        )
+            .then(bookmark => {
+                res 
+                    .status(201)
+                    .location(`/bookmark/${bookmark.id}`)
+                    .json(serializeBookmark(bookmark))
+            })
+            .catch(next)
+
     });
 
 bookmarkRouter.route('/bookmark/:id')
@@ -71,8 +79,8 @@ bookmarkRouter.route('/bookmark/:id')
                 res.json({
                     id: bookmark.id,
                     title: bookmark.title,
-                    url: bookmark.url,
-                    description: bookmark.description,
+                    url: xss(bookmark.url),
+                    description: xss(bookmark.description),
                     rating: bookmark.rating
                 })
             })

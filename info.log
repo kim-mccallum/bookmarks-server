@@ -13,3 +13,8 @@
 {"message":"Unauthorized request to path: /bookmark/2","level":"error"}
 {"message":"Unauthorized request to path: /bookmark/123456","level":"error"}
 {"message":"Unauthorized request to path: /bookmark/2","level":"error"}
+{"message":"Unauthorized request to path: /bookmark","level":"error"}
+{"message":"Unauthorized request to path: /bookmark","level":"error"}
+{"message":"Unauthorized request to path: /bookmark","level":"error"}
+{"message":"Unauthorized request to path: /bookmark","level":"error"}
+{"message":"Unauthorized request to path: /bookmark","level":"error"}

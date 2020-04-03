@@ -3,7 +3,7 @@ const knex = require('knex');
 const app =  require('../src/app');
 const { makeBookmarksArray, makeMaliciousBookmark } = require('./bookmarks.fixtures')
 
-describe.only(`Bookmarks endpoints`, function() {
+describe(`Bookmarks endpoints`, function() {
     let db 
 
     before('make knex instance', () => {
@@ -47,7 +47,6 @@ describe.only(`Bookmarks endpoints`, function() {
         //context for XSS attack here
         context(`Given an XSS attack article`, () => {
             const { maliciousBookmark, expectedBookmark } = makeMaliciousBookmark()
-            console.log(`here is the malicious bm: ${maliciousBookmark}`)
             beforeEach('insert malicious bookmark', () => {
                 return db
                     .into('bookmarks')
@@ -119,7 +118,7 @@ describe.only(`Bookmarks endpoints`, function() {
         })
         // Test for POST
         describe('POST /bookmark', () => {
-            it.only(`Creates an bookmark, responding with 201 and the new bookmark`, function() {
+            it(`Creates an bookmark, responding with 201 and the new bookmark`, function() {
                 const newBookmark = {
                     title:'Test new bookmark',
                     url:'www.yippee.com',
@@ -170,4 +169,40 @@ describe.only(`Bookmarks endpoints`, function() {
 
         })
         // Test for DELETE - later
+        describe('DELETE /bookmark/:bookmark_id', () => {
+            context('Given there are bookmarks in the database', () => {
+                const testBookmarks = makeBookmarksArray()
+
+                beforeEach('insert bookmarks', () => {
+                  return db
+                    .into('bookmarks')  
+                    .insert(testBookmarks)
+                })
+
+                it(`responds with 204 and removes the article`, () => {
+                    const idToRemove = 2
+                    const expectedBookmarks = testBookmarks.filter(bookmark => bookmark.id !== idToRemove)
+                    return supertest(app)
+                        .delete(`/bookmark/${idToRemove}`)
+                        .set("Authorization", "Bearer d2942cae-6f67-11ea-bc55-0242ac130003")
+                        .expect(204)
+                        .then(res => supertest(app)
+                            .get('/bookmark')
+                            .set("Authorization", "Bearer d2942cae-6f67-11ea-bc55-0242ac130003")
+                            .expect(expectedBookmarks)
+                        )
+                })
+
+            })
+
+            context(`Given no bookmarks`, () => {
+                it(`responds with 404`, () => {
+                    const bookmarkId = 123456
+                    return supertest(app)
+                        .delete(`/bookmark/${bookmarkId}`)
+                        .set("Authorization", "Bearer d2942cae-6f67-11ea-bc55-0242ac130003")
+                        .expect(404, {error: { message: `Bookmark doesn't exist` }})
+                })
+            })
+        })
 })

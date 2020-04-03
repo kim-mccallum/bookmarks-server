@@ -86,19 +86,23 @@ bookmarkRouter.route('/bookmark/:id')
             })
             .catch(next)
     })
-    .delete((req, res) => {
-        //implement with DB delete?
-        const { id } = req.params;
+    .delete((req, res, next) => {
+        BookmarksService.deleteBookmark(
+            req.app.get('db'), req.params.id
+        )
+            // .then(() => {
+            //     res.status(204).end()
+            // })
+            .then(bm => {
+                if(!bm){
+                    return res.status(404).json({
+                        error: { message: `Bookmark doesn't exist`}
+                    })
+                }
+                res.status(204).end()
+            })
+            .catch(next)
 
-        const bookmarkIndex = bookmarks.findIndex(bm => bm.id == id);
-
-        if(bookmarkIndex === -1){
-            logger.error(`Bookmark with id ${id} was not found`);
-            return res.status(404).send('Not found');
-        }
-        bookmarks.splice(bookmarkIndex, 1);
-        logger.info(`Bookmark with id ${id} has been exterminated`);
-        res.status(204).end();
     })
 
 module.exports = bookmarkRouter

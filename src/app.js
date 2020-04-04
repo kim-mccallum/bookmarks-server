@@ -29,15 +29,13 @@ app.use(function validateBearerToken(req, res, next){
 
     if(!authToken || authToken.split(' ')[1] !== apiToken) {
         logger.error(`Unauthorized request to path: ${req.path}`);
-        // THROW would be an option - this is how it would work
-        // throw new Error('Oh no!!! Coronavirus!!!')
         return res.status(401).json({ error: "Unauthorized request" })
     }
     next()
 })
 
-// Then implement router
-app.use(bookmarkRouter);
+// Then implement router with api prefix
+app.use('/api',bookmarkRouter);
 
 // Error handling at the end
 app.use(function errorHandler(error, req, res, next){
